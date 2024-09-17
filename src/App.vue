@@ -5,13 +5,16 @@ import currency from 'currency.js'
 // User-given values
 const userNet = ref()
 const userGross = ref()
-// Selectable tax amount, default 19
-const taxValue = ref(19)
+// Selectable tax rate, default 19
+const taxRate = ref(19)
 // Calculated tax amount
 const taxAmount = ref(0)
 
 // Which input was last used?
 let lastUserInput = 'net'
+
+const inputFieldCurrencyFormat = { separator: "", decimal: ",", symbol: ''}
+const outputFormatFullMoney = { separator: "", decimal: "," , symbol: "€", pattern: "# !"}
 
 function convertToCurrency(val) {
   return currency(val, { separator: ".", decimal: "," })
@@ -22,30 +25,30 @@ function calcTax(val, tax_rate) {
 }
 
 function calcTaxFromGross(val, tax_rate) {
-  return currency(val).multiply(tax_rate / 100).divide(1 + tax_rate / 100)
+  return currency(val).subtract(currency(val).divide(1 + tax_rate / 100))
 }
 
 function convertToHumanAmount(val) {
-  return currency(val, { separator: "", decimal: "," , symbol: "€", pattern: "# !"}).format()
+  return currency(val, outputFormatFullMoney).format()
 }
 
 function calculate() {
   lastUserInput = 'net'
 
   const money = convertToCurrency(userNet.value)
-  taxAmount.value = calcTax(money, taxValue.value)
-  userGross.value = currency(money).add(taxAmount.value)
+  taxAmount.value = calcTax(money, taxRate.value)
+  userGross.value = currency(money).add(taxAmount.value).format(inputFieldCurrencyFormat)
 }
 
 function calculateNet() {
   lastUserInput = 'gross'
 
   const money = convertToCurrency(userGross.value)
-  taxAmount.value = calcTaxFromGross(money, taxValue.value)
-  userNet.value = currency(money).subtract(taxAmount.value)
+  taxAmount.value = calcTaxFromGross(money, taxRate.value)
+  userNet.value = currency(money).subtract(taxAmount.value).format(inputFieldCurrencyFormat)
 }
 
-function updateTaxValue() {
+function updateTaxRate() {
   if (lastUserInput === 'net') {
     calculate()
   } else {
@@ -61,6 +64,7 @@ function updateTaxValue() {
 
     <div class="mx-auto flex justify-center items-center space-x-2 max-lg:flex-col">
       <input
+        name="userNet"
         @input="calculate"
         v-model.trim="userNet"
         placeholder="Nettobetrag"
@@ -68,7 +72,7 @@ function updateTaxValue() {
 
       <span class="text-lg">&plus;</span>
 
-      <select @change="updateTaxValue" v-model="taxValue">
+      <select @change="updateTaxRate" v-model="taxRate" name="taxRate">
         <option disabled>Bitte wählen&hellip;</option>
         <option value="7">7%</option>
         <option value="19">19%</option>
@@ -78,6 +82,7 @@ function updateTaxValue() {
       <span class="text-lg">=</span>
 
       <input
+        name="userGross"
         @input="calculateNet"
         v-model="userGross"
         placeholder="Bruttobetrag"
@@ -88,21 +93,21 @@ function updateTaxValue() {
       <h2 class="font-mono font-semibold text-lg text-stone-600">Detailrechnung</h2>
       <div class="mt-2 flex justify-center space-x-2 text-center text-lg">
         <div class="flex flex-col">
-          <span>{{ convertToHumanAmount(userNet) }}</span>
+          <span name="userNetHuman">{{ convertToHumanAmount(userNet) }}</span>
           <span class="text-xs text-sky-700/80">Netto</span>
         </div>
         <div class="flex flex-col">
           <span>&plus;</span>
         </div>
         <div class="flex flex-col">
-          <span>{{ convertToHumanAmount(taxAmount) }}</span>
-          <span class="text-xs text-sky-700/80">{{ taxValue }}% MwSt</span>
+          <span name="taxAmountHuman">{{ convertToHumanAmount(taxAmount) }}</span>
+          <span class="text-xs text-sky-700/80">{{ taxRate }}% MwSt</span>
         </div>
         <div class="flex flex-col">
           <span>=</span>
         </div>
         <div class="flex flex-col">
-          <span>{{ convertToHumanAmount(userGross) }}</span> 
+          <span name="userGrossHuman">{{ convertToHumanAmount(userGross) }}</span> 
           <span class="text-xs text-sky-700/80">Brutto</span>
         </div>
       </div>
