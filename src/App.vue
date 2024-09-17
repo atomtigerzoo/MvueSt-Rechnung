@@ -56,16 +56,17 @@ function updateTaxValue() {
 </script>
 
 <template>
-  <h1 class="text-xl font-bold">Mehrwertsteuer-Rechner</h1>
-  <div class="mt-6">
-    <div class="flex space-x-2">
+  <div class="p-8 bg-white border-4 border-stone-300 md:rounded-lg max-md:border-l-0 max-md:border-r-0">
+    <h1 class="mb-8 text-3xl text-center text-stone-800 font-mono font-semibold">Mehrwertsteuer-Rechner</h1>
+
+    <div class="mx-auto flex justify-center items-center space-x-2 max-lg:flex-col">
       <input
         @input="calculate"
         v-model.trim="userNet"
         placeholder="Nettobetrag"
         >
 
-      <span>&plus;</span>
+      <span class="text-lg">&plus;</span>
 
       <select @change="updateTaxValue" v-model="taxValue">
         <option disabled>Bitte wählen&hellip;</option>
@@ -74,7 +75,7 @@ function updateTaxValue() {
         <option value="20">20% (AT)</option>
       </select>
 
-      <span>=</span>
+      <span class="text-lg">=</span>
 
       <input
         @input="calculateNet"
@@ -83,26 +84,27 @@ function updateTaxValue() {
         >
     </div>
     
-    <div class="mt-4 flex space-x-2 text-center">
-      <div class="flex flex-col">
-        <span>{{ convertToHumanAmount(userNet) }}</span>
-        <span class="text-sm text-sky-700/80">Netto</span>
-      </div>
-      <div class="flex flex-col">
-        <span>&plus;</span>
-        <span></span>
-      </div>
-      <div class="flex flex-col">
-        <span>{{ convertToHumanAmount(taxAmount) }}</span>
-        <span class="text-sm text-sky-700/80">{{ taxValue }}% MwSt</span>
-      </div>
-      <div class="flex flex-col">
-        <span>=</span>
-        <span></span>
-      </div>
-      <div class="flex flex-col">
-        <span>{{ convertToHumanAmount(userGross) }}</span> 
-        <span class="text-sm text-sky-700/80">Brutto</span>
+    <div class="mt-8 text-center">
+      <h2 class="font-mono font-semibold text-lg text-stone-600">Detailrechnung</h2>
+      <div class="mt-2 flex justify-center space-x-2 text-center text-lg">
+        <div class="flex flex-col">
+          <span>{{ convertToHumanAmount(userNet) }}</span>
+          <span class="text-xs text-sky-700/80">Netto</span>
+        </div>
+        <div class="flex flex-col">
+          <span>&plus;</span>
+        </div>
+        <div class="flex flex-col">
+          <span>{{ convertToHumanAmount(taxAmount) }}</span>
+          <span class="text-xs text-sky-700/80">{{ taxValue }}% MwSt</span>
+        </div>
+        <div class="flex flex-col">
+          <span>=</span>
+        </div>
+        <div class="flex flex-col">
+          <span>{{ convertToHumanAmount(userGross) }}</span> 
+          <span class="text-xs text-sky-700/80">Brutto</span>
+        </div>
       </div>
     </div>
 
