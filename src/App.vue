@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import currency from 'currency.js'
 
 // User-given values
@@ -55,7 +55,6 @@ function updateTaxRate() {
     calculateNet()
   }
 }
-
 </script>
 
 <template>
