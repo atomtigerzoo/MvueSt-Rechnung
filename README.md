@@ -1,8 +1,8 @@
-# 💸 MvueSt-Rechner
+# 💥 WIP - MvueSt-Rechnung
 
-Ein Mehrwertsteuerrechner gebaut mit VueJS 3 und TailwindCSS
+!! WIP - im Aufbau - WIP !!
 
-Ausprobieren: https://mwst.atomtigerzoo.com/
+Eine simple Rechnungsvorlage gebaut mit VueJS 3 und TailwindCSS
 
 ## Project Setup
 
