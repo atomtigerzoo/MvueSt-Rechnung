@@ -57,16 +57,6 @@ function convertToHumanAmount(val) {
 //   }
 // }
 
-/**
- * The entryRows data is an array of objects 
- * containing the tax rate and the net amount
- * of all entries
- */
-let entryRowsId = 1;
-const entryRows = ref([
-  {id: entryRowsId, taxRate: "19", entryNet: ''},
-])
-
 
 /**
  * grossNet is the net sum of all entries
@@ -107,6 +97,17 @@ const grossTotal = computed(() => {
 
 
 /**
+ * The entryRows data is an array of objects 
+ * containing the tax rate and the net amount
+ * of all entries
+ */
+let entryRowsId = 1;
+const entryRows = ref([
+  {id: entryRowsId, taxRate: "19", entryNet: ''},
+])
+
+
+/**
  * Creates a new entry row and focuses the input field
  */
 async function addEntryRow() {
@@ -116,15 +117,24 @@ async function addEntryRow() {
   }
 
   entryRowsId++;
-  let addedId = entryRows.value.push({id: entryRowsId, taxRate: "19", entryNet: ''})
+  entryRows.value.push({id: entryRowsId, taxRate: "19", entryNet: ''})
 
   await nextTick()
 
   // focus input on created entry
   document
-    .getElementById(`entryRow-${addedId}`)
+    .getElementById(`entryRow-${entryRowsId}`)
     .querySelector('input[name="entry-service"]')
     .focus()
+}
+
+/**
+ * Removes an entry row from the entryRows array given its id
+ * @param {number} id The id of the entry row to remove
+ */
+function removeEntryRow(id) {
+  // Return filtered array without the given entry matching the entryRow.id
+  entryRows.value = entryRows.value.filter(entryRow => entryRow.id !== id)
 }
 </script>
 
@@ -139,6 +149,7 @@ async function addEntryRow() {
         :id="`entryRow-${entryRow.id}`"
         v-model:tax-rate="entryRow.taxRate"
         v-model:entry-net="entryRow.entryNet"
+        @removeEntry="removeEntryRow(entryRow.id)"
         ></EntryRow>
     </div>
 
@@ -152,11 +163,15 @@ async function addEntryRow() {
 
     <div class="mt-4 text-center">
       <button
+        v-if="entryRows.length < 10"
         @click="addEntryRow"
         class="mx-auto size-6 bg-neutral-100 rounded-full flex justify-center items-center"
         type="button">
           <span class="-mt-1 text-lg text-neutral-500 font-semibold">&plus;</span>
       </button>
+      <span v-else class="text-xs italic text-neutral-500">
+        Max. 10 Einträge möglich
+      </span>
     </div>
 
     <div class="grid grid-cols-12 gap-2">
