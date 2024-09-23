@@ -1,6 +1,5 @@
 # Todo
 
-- show tax gross in seperate fields if multiple tax rates chosen
 - export as raw text (for copying into another program)
 
 -> add localstorage

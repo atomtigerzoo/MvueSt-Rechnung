@@ -15,7 +15,6 @@ import GrossField from './components/GrossField.vue'
 // let lastUserInput = 'net'
 
 const taxRates = [
-  "0",
   "7",
   "19"
 ]
@@ -79,16 +78,19 @@ const grossNet = computed(() => {
   return result
 })
 
+
 /**
- * grossTax is the tax sum of all entries
+ * grossTaxes is the tax sum of all entries
  */
-const grossTax = computed(() => {
-  let taxResult = currency(0)
-  
+const grossTaxes = computed(() => {
+  let taxResult = {
+    [taxRateDefault]: currency(0)
+  }
+
   entryRows.value.forEach((entryRow) => {
     let value = convertToCurrency(entryRow.entryNet)
     let tax = calcTax(value, entryRow.taxRate)
-    taxResult = currency(taxResult).add(tax)
+    taxResult[entryRow.taxRate] = currency(taxResult[entryRow.taxRate]).add(tax)
   })
 
   return taxResult
@@ -96,10 +98,25 @@ const grossTax = computed(() => {
 
 
 /**
- * grossTotal is the gross sum of all entries
+ * grossTotal sums up all taxes from grossTaxes object
  */
 const grossTotal = computed(() => {
-  return currency(grossNet.value).add(grossTax.value)
+  let taxes;
+
+  for (let t in grossTaxes.value) {
+    taxes = currency(taxes).add(grossTaxes.value[t])
+  }
+
+  return currency(grossNet.value).add(taxes)
+})
+
+
+/**
+ * Set of tax rates used in the form
+ */
+const taxRatesUsed = computed(() => {
+  return [...new Set(entryRows.value.map((entryRow) => entryRow.taxRate))]
+    .sort((a, b) => a - b)
 })
 
 
@@ -183,7 +200,14 @@ function removeEntryRow(id) {
     </div>
 
     <GrossField :inputValue="convertToHumanAmount(grossNet)" inputName="grossNet" label="Gesamt Netto" />
-    <GrossField :inputValue="convertToHumanAmount(grossTax)" inputName="grossTax" label="Gesamt Steuern" />
+
+    <GrossField
+      v-for="rate in taxRatesUsed"
+      :inputValue="convertToHumanAmount(grossTaxes[rate])"
+      inputName="grossTaxes-RATEHERE"
+      :label="`Steuern (${rate}%)`"
+      />
+    
     <GrossField :inputValue="convertToHumanAmount(grossTotal)" inputName="grossTotal" label="Gesamt Brutto" />
     
     <!-- <div class="mx-auto flex justify-center items-center space-x-2 max-lg:flex-col">
