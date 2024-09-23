@@ -142,14 +142,6 @@ function removeEntryRow(id) {
         ></EntryRow>
     </div>
 
-    <div class="my-2 bg-neutral-200" v-for="(userData, index) in entryRows">
-      <div>
-        id: {{ userData.id }} | 
-        userData.taxRate: {{ userData.taxRate }} | 
-        userData.entryNet: {{ userData.entryNet }}
-      </div>
-    </div>
-
     <div class="mt-4 text-center">
       <button
         v-if="entryRows.length < 10"
