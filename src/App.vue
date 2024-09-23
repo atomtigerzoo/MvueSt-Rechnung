@@ -1,19 +1,20 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import currency from 'currency.js'
 
-// User-given values
-const userNet = ref()
-const userGross = ref()
-// Selectable tax rate, default 19
-const taxRate = ref(19)
-// Calculated tax amount
-const taxAmount = ref(0)
+import EntryRow from './components/EntryRow.vue'
+import GrossField from './components/GrossField.vue'
 
-// Which input was last used?
-let lastUserInput = 'net'
+// // User-given values
+// const userNet = ref()
+// const userGross = ref()
+// // Calculated tax amount
+// // const taxAmount = ref(0)
 
-const inputFieldCurrencyFormat = { separator: "", decimal: ",", symbol: ''}
+// // Which input was last used?
+// let lastUserInput = 'net'
+
+// const inputFieldCurrencyFormat = { separator: "", decimal: ",", symbol: ''}
 const outputFormatFullMoney = { separator: "", decimal: "," , symbol: "€", pattern: "# !"}
 
 function convertToCurrency(val) {
@@ -24,44 +25,135 @@ function calcTax(val, tax_rate) {
   return currency(val).multiply(tax_rate / 100)
 }
 
-function calcTaxFromGross(val, tax_rate) {
-  return currency(val).subtract(currency(val).divide(1 + tax_rate / 100))
-}
+// function calcTaxFromGross(val, tax_rate) {
+//   return currency(val).subtract(currency(val).divide(1 + tax_rate / 100))
+// }
 
 function convertToHumanAmount(val) {
   return currency(val, outputFormatFullMoney).format()
 }
 
-function calculate() {
-  lastUserInput = 'net'
+// function calculate() {
+//   lastUserInput = 'net'
 
-  const money = convertToCurrency(userNet.value)
-  taxAmount.value = calcTax(money, taxRate.value)
-  userGross.value = currency(money).add(taxAmount.value).format(inputFieldCurrencyFormat)
-}
+//   const money = convertToCurrency(userNet.value)
+//   // taxAmount.value = calcTax(money, taxRate.value)
+//   // userGross.value = currency(money).add(taxAmount.value).format(inputFieldCurrencyFormat)
+// }
 
-function calculateNet() {
-  lastUserInput = 'gross'
+// function calculateNet() {
+//   lastUserInput = 'gross'
 
-  const money = convertToCurrency(userGross.value)
-  taxAmount.value = calcTaxFromGross(money, taxRate.value)
-  userNet.value = currency(money).subtract(taxAmount.value).format(inputFieldCurrencyFormat)
-}
+//   const money = convertToCurrency(userGross.value)
+//   taxAmount.value = calcTaxFromGross(money, taxRate.value)
+//   userNet.value = currency(money).subtract(taxAmount.value).format(inputFieldCurrencyFormat)
+// }
 
-function updateTaxRate() {
-  if (lastUserInput === 'net') {
-    calculate()
-  } else {
-    calculateNet()
+// function updateTaxRate() {
+//   if (lastUserInput === 'net') {
+//     calculate()
+//   } else {
+//     calculateNet()
+//   }
+// }
+
+/**
+ * The entryRows data is an array of objects 
+ * containing the tax rate and the net amount
+ * of all entries
+ */
+const entryRows = ref([
+  {taxRate: "19", entryNet: ''},
+])
+
+
+/**
+ * grossNet is the net sum of all entries
+ */
+const grossNet = computed(() => {
+  let result = currency(0)
+  
+  entryRows.value.forEach((entryRow) => {
+    let value = convertToCurrency(entryRow.entryNet)
+    result = currency(result).add(value)
+  })
+
+  return result
+})
+
+/**
+ * grossTax is the tax sum of all entries
+ */
+const grossTax = computed(() => {
+  let taxResult = currency(0)
+  
+  entryRows.value.forEach((entryRow) => {
+    let value = convertToCurrency(entryRow.entryNet)
+    let tax = calcTax(value, entryRow.taxRate)
+    taxResult = currency(taxResult).add(tax)
+  })
+
+  return taxResult
+})
+
+
+/**
+ * grossTotal is the gross sum of all entries
+ */
+const grossTotal = computed(() => {
+  return currency(grossNet.value).add(grossTax.value)
+})
+
+
+/**
+ * Creates a new entry row
+ */
+function createNewEntryRow() {
+  if (entryRows.value.length > 9) {
+    alert('Max. 10 Zeilen erlaubt')
+    return false;
   }
+
+  entryRows.value.push({taxRate: "19", entryNet: ''})
 }
 </script>
 
 <template>
-  <div class="p-8 bg-white border-4 border-stone-300 md:rounded-lg max-md:border-l-0 max-md:border-r-0">
-    <h1 class="mb-8 text-3xl text-center text-stone-800 font-mono font-semibold">Mehrwertsteuer-Rechner</h1>
+  <h1 class="mb-8 text-3xl text-center text-stone-800 font-mono font-semibold">Web-Rechnungsvorlage</h1>
 
-    <div class="mx-auto flex justify-center items-center space-x-2 max-lg:flex-col">
+  <div class="p-8 bg-white border-4 border-stone-300 md:rounded-lg max-md:border-l-0 max-md:border-r-0">
+    <div v-for="(entryRow, index) in entryRows">
+      <EntryRow :key="index" v-model:tax-rate="entryRow.taxRate" v-model:entry-net="entryRow.entryNet" />
+    </div>
+
+    <div class="my-2 bg-neutral-200" v-for="(userData, index) in entryRows">
+      <div>
+        index: {{ index }} | 
+        userData.taxRate: {{ userData.taxRate }} | 
+        userData.entryNet: {{ userData.entryNet }}
+      </div>
+    </div>
+
+    <div class="mt-4 text-center">
+      <button
+        @click="createNewEntryRow"
+        class="mx-auto size-6 bg-neutral-100 rounded-full flex justify-center items-center"
+        type="button">
+          <span class="-mt-1 text-lg text-neutral-500 font-semibold">&plus;</span>
+      </button>
+    </div>
+
+    <div class="grid grid-cols-12 gap-2">
+      <div class="col-start-10 col-span-3 space-y-3">
+        <GrossField :inputValue="convertToHumanAmount(grossNet)" inputName="grossNet" inputPlaceholder="Gesamt (Netto)" />
+
+        <GrossField :inputValue="convertToHumanAmount(grossTax)" inputName="grossTax" inputPlaceholder="Gesamt (MwSt)" />
+
+        <GrossField :inputValue="convertToHumanAmount(grossTotal)" inputName="grossTotal" inputPlaceholder="Gesamt (Brutto)" />
+      </div>
+    </div>
+
+    <!-- <div class="mx-auto flex justify-center items-center space-x-2 max-lg:flex-col">
       <input
         name="userNet"
         @input="calculate"
@@ -86,31 +178,7 @@ function updateTaxRate() {
         v-model="userGross"
         placeholder="Bruttobetrag"
         >
-    </div>
-    
-    <div class="mt-8 text-center">
-      <h2 class="font-mono font-semibold text-lg text-stone-600">Detailrechnung</h2>
-      <div class="mt-2 flex justify-center space-x-2 text-center text-lg">
-        <div class="flex flex-col">
-          <span name="userNetHuman">{{ convertToHumanAmount(userNet) }}</span>
-          <span class="text-xs text-sky-700/80">Netto</span>
-        </div>
-        <div class="flex flex-col">
-          <span>&plus;</span>
-        </div>
-        <div class="flex flex-col">
-          <span name="taxAmountHuman">{{ convertToHumanAmount(taxAmount) }}</span>
-          <span class="text-xs text-sky-700/80">{{ taxRate }}% MwSt</span>
-        </div>
-        <div class="flex flex-col">
-          <span>=</span>
-        </div>
-        <div class="flex flex-col">
-          <span name="userGrossHuman">{{ convertToHumanAmount(userGross) }}</span> 
-          <span class="text-xs text-sky-700/80">Brutto</span>
-        </div>
-      </div>
-    </div>
+    </div> -->
 
   </div>
 </template>
