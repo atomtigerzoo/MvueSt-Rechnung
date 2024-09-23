@@ -182,16 +182,10 @@ function removeEntryRow(id) {
       </span>
     </div>
 
-    <div class="grid grid-cols-12 gap-2">
-      <div class="col-start-10 col-span-3 space-y-3">
-        <GrossField :inputValue="convertToHumanAmount(grossNet)" inputName="grossNet" inputPlaceholder="Gesamt (Netto)" />
-
-        <GrossField :inputValue="convertToHumanAmount(grossTax)" inputName="grossTax" inputPlaceholder="Gesamt (MwSt)" />
-
-        <GrossField :inputValue="convertToHumanAmount(grossTotal)" inputName="grossTotal" inputPlaceholder="Gesamt (Brutto)" />
-      </div>
-    </div>
-
+    <GrossField :inputValue="convertToHumanAmount(grossNet)" inputName="grossNet" label="Gesamt Netto" />
+    <GrossField :inputValue="convertToHumanAmount(grossTax)" inputName="grossTax" label="Gesamt Steuern" />
+    <GrossField :inputValue="convertToHumanAmount(grossTotal)" inputName="grossTotal" label="Gesamt Brutto" />
+    
     <!-- <div class="mx-auto flex justify-center items-center space-x-2 max-lg:flex-col">
       <input
         name="userNet"
