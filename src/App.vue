@@ -14,6 +14,13 @@ import GrossField from './components/GrossField.vue'
 // // Which input was last used?
 // let lastUserInput = 'net'
 
+const taxRates = [
+  "0",
+  "7",
+  "19"
+]
+const taxRateDefault = "19"
+
 // const inputFieldCurrencyFormat = { separator: "", decimal: ",", symbol: ''}
 const outputFormatFullMoney = { separator: "", decimal: "," , symbol: "€", pattern: "# !"}
 
@@ -103,7 +110,7 @@ const grossTotal = computed(() => {
  */
 let entryRowsId = 1;
 const entryRows = ref([
-  {id: entryRowsId, taxRate: "19", entryNet: ''},
+  {id: entryRowsId, taxRate: taxRateDefault, entryNet: ''},
 ])
 
 
@@ -117,7 +124,7 @@ async function addEntryRow() {
   }
 
   entryRowsId++;
-  entryRows.value.push({id: entryRowsId, taxRate: "19", entryNet: ''})
+  entryRows.value.push({id: entryRowsId, taxRate: taxRateDefault, entryNet: ''})
 
   await nextTick()
 
@@ -147,6 +154,7 @@ function removeEntryRow(id) {
         v-for="entryRow in entryRows"
         :key="entryRow.id"
         :id="`entryRow-${entryRow.id}`"
+        :tax-rates="taxRates"
         v-model:tax-rate="entryRow.taxRate"
         v-model:entry-net="entryRow.entryNet"
         @removeEntry="removeEntryRow(entryRow.id)"

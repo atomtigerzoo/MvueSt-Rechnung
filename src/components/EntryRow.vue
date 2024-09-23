@@ -5,7 +5,11 @@
 
 defineEmits(['removeEntry'])
 
-const taxRate = defineModel('taxRate', {type: String, default: '19'})
+defineProps({
+  taxRates: Array
+})
+
+const taxRate = defineModel('taxRate', {type: String, default: ''})
 const entryNet = defineModel('entryNet', {type: String, default: ''})
 </script>
 
@@ -14,9 +18,11 @@ const entryNet = defineModel('entryNet', {type: String, default: ''})
       <div class="grid grid-cols-12 gap-2">
         <input class="col-span-8" type="text" name="entry-service" placeholder="Leistung / Produkt">
         <select v-model="taxRate" name="taxRate">
-          <option value="7">7%</option>
-          <option value="19">19%</option>
-          <option value="20">20% (AT)</option>
+          <option
+            v-for="rate in taxRates"
+            :value="rate"
+            :selected="rate === taxRate"
+            >{{ rate }}%</option>
         </select>
 
         <div class="col-span-3 flex justify-start items-center">
