@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, nextTick } from 'vue'
 import currency from 'currency.js'
 
 import EntryRow from './components/EntryRow.vue'
@@ -62,8 +62,9 @@ function convertToHumanAmount(val) {
  * containing the tax rate and the net amount
  * of all entries
  */
+let entryRowsId = 1;
 const entryRows = ref([
-  {taxRate: "19", entryNet: ''},
+  {id: entryRowsId, taxRate: "19", entryNet: ''},
 ])
 
 
@@ -106,15 +107,24 @@ const grossTotal = computed(() => {
 
 
 /**
- * Creates a new entry row
+ * Creates a new entry row and focuses the input field
  */
-function createNewEntryRow() {
+async function addEntryRow() {
   if (entryRows.value.length > 9) {
     alert('Max. 10 Zeilen erlaubt')
     return false;
   }
 
-  entryRows.value.push({taxRate: "19", entryNet: ''})
+  entryRowsId++;
+  let addedId = entryRows.value.push({id: entryRowsId, taxRate: "19", entryNet: ''})
+
+  await nextTick()
+
+  // focus input on created entry
+  document
+    .getElementById(`entryRow-${addedId}`)
+    .querySelector('input[name="entry-service"]')
+    .focus()
 }
 </script>
 
@@ -122,13 +132,19 @@ function createNewEntryRow() {
   <h1 class="mb-8 text-3xl text-center text-stone-800 font-mono font-semibold">Web-Rechnungsvorlage</h1>
 
   <div class="p-8 bg-white border-4 border-stone-300 md:rounded-lg max-md:border-l-0 max-md:border-r-0">
-    <div v-for="(entryRow, index) in entryRows">
-      <EntryRow :key="index" v-model:tax-rate="entryRow.taxRate" v-model:entry-net="entryRow.entryNet" />
+    <div class="space-y-3">
+      <EntryRow
+        v-for="entryRow in entryRows"
+        :key="entryRow.id"
+        :id="`entryRow-${entryRow.id}`"
+        v-model:tax-rate="entryRow.taxRate"
+        v-model:entry-net="entryRow.entryNet"
+        ></EntryRow>
     </div>
 
     <div class="my-2 bg-neutral-200" v-for="(userData, index) in entryRows">
       <div>
-        index: {{ index }} | 
+        id: {{ userData.id }} | 
         userData.taxRate: {{ userData.taxRate }} | 
         userData.entryNet: {{ userData.entryNet }}
       </div>
@@ -136,7 +152,7 @@ function createNewEntryRow() {
 
     <div class="mt-4 text-center">
       <button
-        @click="createNewEntryRow"
+        @click="addEntryRow"
         class="mx-auto size-6 bg-neutral-100 rounded-full flex justify-center items-center"
         type="button">
           <span class="-mt-1 text-lg text-neutral-500 font-semibold">&plus;</span>

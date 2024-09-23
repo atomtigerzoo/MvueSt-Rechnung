@@ -10,7 +10,7 @@ const entryNet = defineModel('entryNet', {type: String, default: ''})
 <template>
   <div>
       <div class="grid grid-cols-12 gap-2">
-        <input class="col-span-8" type="text" name="entry" placeholder="Leistung / Produkt">
+        <input class="col-span-8" type="text" name="entry-service" placeholder="Leistung / Produkt">
         <select v-model="taxRate" name="taxRate">
           <option value="7">7%</option>
           <option value="19">19%</option>
