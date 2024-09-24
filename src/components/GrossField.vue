@@ -12,13 +12,13 @@ defineProps({
 </script>
 
 <template>
-  <div class="mb-3 grid grid-cols-12 gap-2">
-    <div class="col-span-9 flex justify-end items-center">
+  <div class="mb-3 mr-3 flex justify-end space-x-2 md:mr-0">
+    <div class="flex justify-end items-center">
       <label :for="inputName" class="text-neutral-500 text-xs text-right whitespace-nowrap">{{ label }}</label>
     </div>
-    <div class="col-span-3 flex justify-start items-center">
+    <div class="flex justify-start items-center">
       <input
-        class="grow pr-8 text-right"
+        class="pr-8 text-right w-32 md:w-48"
         readonly
         :value="inputValue"
         :id="inputName"

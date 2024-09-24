@@ -15,31 +15,44 @@ const entryNet = defineModel('entryNet', {type: String, default: ''})
 
 <template>
   <div class="relative group -ml-7 pl-7">
-      <div class="grid grid-cols-12 gap-2">
-        <input class="col-span-8" type="text" name="entry-service" placeholder="Leistung / Produkt">
-        <select v-model="taxRate" name="taxRate">
-          <option
-            v-for="rate in taxRates"
-            :value="rate"
-            :selected="rate === taxRate"
-            >{{ rate }}%</option>
-        </select>
+      <div class="
+        flex flex-col
+        space-y-4
+        md:flex-row md:justify-start md:items-start md:space-x-2 md:space-y-0
+      ">
+        <div class="grow">
+          <input class="w-full" type="text" name="entry-service" placeholder="Leistung / Produkt">
 
-        <div class="col-span-3 flex justify-start items-center">
+          <div class="mt-1.5">
+            <textarea class="w-full text-xs" rows="1" placeholder="Beschreibung" name="entry-description"></textarea>
+          </div>
+        </div>
+        
+        <div class="shrink-0 text-right pr-3 md:flex md:items-center md:pr-0">
+          <select class="mr-4 md:w-full md:mr-2" v-model="taxRate" name="taxRate">
+            <option
+              v-for="rate in taxRates"
+              :value="rate"
+              :selected="rate === taxRate"
+              >{{ rate }}%</option>
+          </select>
+
           <input
             name="userNet"
             v-model.trim="entryNet"
             placeholder="Nettobetrag"
-            class="grow pr-8 text-right"
+            class="w-32 pr-8 text-right lg:w-48"
             >
           <span class="-ml-7 pl-2 text-lg text-neutral-700 font-semibold">&euro;</span>
         </div>
       </div>
-      <div class="mt-1.5 grid grid-cols-12 gap-2">
-        <textarea class="col-span-8 text-xs" rows="1" placeholder="Beschreibung" name="entry-description"></textarea>
-      </div>
 
-      <div class="hidden absolute -left-0 top-2 group-hover:block">
+      <div class="
+        absolute bottom-2
+        md:bottom-1 md:-right-2
+        lg:right-auto lg:-left-0 lg:top-2 lg:hidden
+        group-hover:block
+      ">
         <button
           @click="$emit('removeEntry')"
           class="group/button flex justify-center items-center mx-auto size-6 rounded-full bg-neutral-100 hover:bg-red-100"

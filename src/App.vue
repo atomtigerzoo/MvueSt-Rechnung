@@ -130,7 +130,7 @@ function removeEntryRow(id) {
 <template>
   <h1 class="mb-8 text-3xl text-center text-stone-800 font-mono font-semibold">Web-Rechnungsvorlage</h1>
 
-  <div class="p-8 bg-white border-4 border-stone-300 md:rounded-lg max-md:border-l-0 max-md:border-r-0">
+  <div class="py-8 px-4 bg-white border-4 border-stone-300 md:rounded-lg max-md:border-l-0 max-md:border-r-0 md:p-8">
     <!-- This is the container for the EntryRow ref wrapper -->
     <div ref="entryRowsRef" class="space-y-3">
       <EntryRow
@@ -143,7 +143,7 @@ function removeEntryRow(id) {
         ></EntryRow>
     </div>
 
-    <div class="mt-4 text-center">
+    <div class="my-4 text-center lg:mb-0">
       <button
         v-if="entryRows.length < 10"
         @click="addEntryRow"
