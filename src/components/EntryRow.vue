@@ -55,6 +55,7 @@ const entryNet = defineModel('entryNet', {type: String, default: ''})
       ">
         <button
           @click="$emit('removeEntry')"
+          name="removeEntry"
           class="group/button flex justify-center items-center mx-auto size-6 rounded-full bg-neutral-100 hover:bg-red-100"
           type="button">
             <span class="text-neutral-500 group-hover/button:text-red-800">

@@ -116,5 +116,23 @@ describe('entryRows', () => {
         // But there should still be only 10 entries
         entryRows = wrapper.findAllComponents(EntryRow)
         expect(entryRows.length).to.be.equal(10)
+    }),
+
+    test('add new row, when all rows are deleted', async () => {
+        const wrapper = mount(App, {
+            attachTo: document.body
+        })
+
+        const entryRow = wrapper.findComponent(EntryRow)
+        const removeButton = entryRow.find('button[name="removeEntry"]')
+        
+        // One row by default
+        expect(wrapper.vm.entryRows.length).to.be.equal(1)
+        
+        // Remove this one entry
+        await removeButton.trigger('click')
+
+        // After removal there should be a new one created automatically
+        expect(wrapper.vm.entryRows.length).to.be.equal(1)
     })
 })

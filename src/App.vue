@@ -121,9 +121,16 @@ async function addEntryRow() {
  * Removes an entry row from the entryRows array given its id
  * @param {number} id The id of the entry row to remove
  */
-function removeEntryRow(id) {
+async function removeEntryRow(id) {
   // Return filtered array without the given entry matching the entryRow.id
   entryRows.value = entryRows.value.filter(entryRow => entryRow.id !== id)
+
+  await nextTick()
+
+  // If there are no more entries, add a new one
+  if (entryRows.value.length === 0) {
+    addEntryRow()
+  }
 }
 </script>
 
