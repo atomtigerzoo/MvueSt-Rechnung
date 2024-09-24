@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, nextTick } from 'vue'
+import { ref, computed, nextTick, registerRuntimeCompiler } from 'vue'
 import currency from 'currency.js'
 
 import EntryRow from './components/EntryRow.vue'
@@ -12,8 +12,8 @@ const taxRates = [
 ]
 const taxRateDefault = "19"
 
-// const inputFieldCurrencyFormat = { separator: "", decimal: ",", symbol: ''}
-const outputFormatFullMoney = { separator: "", decimal: "," , symbol: "€", pattern: "# !"}
+// const outputFormatFullMoney = { separator: "", decimal: "," , symbol: "€", pattern: "# !"}
+const outputFormatFullMoney = { separator: "", decimal: "," , symbol: ""}
 
 function convertToCurrency(val) {
   return currency(val, { separator: ".", decimal: "," })
@@ -84,6 +84,9 @@ const taxRatesUsed = computed(() => {
 })
 
 
+/* A ref that contains all the entryRow components */
+const entryRowsRef = ref()
+
 /**
  * The entryRows data is an array of objects 
  * containing the tax rate and the net amount
@@ -99,21 +102,19 @@ const entryRows = ref([
  * Creates a new entry row and focuses the input field
  */
 async function addEntryRow() {
-  if (entryRows.value.length > 9) {
-    alert('Max. 10 Zeilen erlaubt')
-    return false;
+  if (entryRows.value.length >= 10) {
+    // Message is shown in UI, return only
+    return;
   }
 
   entryRowsId++;
   entryRows.value.push({id: entryRowsId, taxRate: taxRateDefault, entryNet: ''})
 
+  
   await nextTick()
-
-  // focus input on created entry
-  document
-    .getElementById(`entryRow-${entryRowsId}`)
-    .querySelector('input[name="entry-service"]')
-    .focus()
+  
+  const addedRow = entryRowsRef.value.lastElementChild
+  addedRow.querySelector('input[name="entry-service"]').focus()
 }
 
 /**
@@ -130,11 +131,11 @@ function removeEntryRow(id) {
   <h1 class="mb-8 text-3xl text-center text-stone-800 font-mono font-semibold">Web-Rechnungsvorlage</h1>
 
   <div class="p-8 bg-white border-4 border-stone-300 md:rounded-lg max-md:border-l-0 max-md:border-r-0">
-    <div class="space-y-3">
+    <!-- This is the container for the EntryRow ref wrapper -->
+    <div ref="entryRowsRef" class="space-y-3">
       <EntryRow
         v-for="entryRow in entryRows"
         :key="entryRow.id"
-        :id="`entryRow-${entryRow.id}`"
         :tax-rates="taxRates"
         v-model:tax-rate="entryRow.taxRate"
         v-model:entry-net="entryRow.entryNet"
@@ -146,6 +147,7 @@ function removeEntryRow(id) {
       <button
         v-if="entryRows.length < 10"
         @click="addEntryRow"
+        name="addEntryRow"
         class="mx-auto size-6 bg-neutral-100 rounded-full flex justify-center items-center"
         type="button">
           <span class="-mt-1 text-lg text-neutral-500 font-semibold">&plus;</span>
@@ -160,7 +162,7 @@ function removeEntryRow(id) {
     <GrossField
       v-for="rate in taxRatesUsed"
       :inputValue="convertToHumanAmount(grossTaxes[rate])"
-      inputName="grossTaxes-RATEHERE"
+      :inputName="`grossTaxes-${rate}`"
       :label="`Steuern (${rate}%)`"
       />
     
