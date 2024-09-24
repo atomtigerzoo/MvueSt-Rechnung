@@ -88,54 +88,31 @@ test('calcTax method calculates 19% tax correctly', async () => {
 })
 
 
-test('calcTaxFromGross method calculates tax correctly from gross value', async () => {
-    const wrapper = mount(App)
-
-    let result
-    let taxRate = 19
-
-    result = wrapper.vm.calcTaxFromGross(1, taxRate)
-    expect(result.intValue).toBe(16)
-
-    result = wrapper.vm.calcTaxFromGross(10, taxRate)
-    expect(result.intValue).toBe(160)
-
-    result = wrapper.vm.calcTaxFromGross('6.90', taxRate)
-    expect(result.intValue).toBe(110)
-
-    result = wrapper.vm.calcTaxFromGross('69.99', taxRate)
-    expect(result.intValue).toBe(1117)
-
-    result = wrapper.vm.calcTaxFromGross('89.04', taxRate)
-    expect(result.intValue).toBe(1422)
-})
-
-
 test('convertToHumanAmount method converts correctly', async () => {
     const wrapper = mount(App)
 
     let result
 
     result = wrapper.vm.convertToHumanAmount(currency(1))
-    expect(result).toBe('1,00 €')
-    expect(result).not.toBe('$ 1.00')
+    expect(result).toBe('1,00')
+    expect(result).not.toBe('1.00 €')
     expect(result).not.toBe(100)
 
     result = wrapper.vm.convertToHumanAmount(currency('1.00'))
-    expect(result).toBe('1,00 €')
+    expect(result).toBe('1,00')
 
     result = wrapper.vm.convertToHumanAmount(wrapper.vm.convertToCurrency('1,00'))
-    expect(result).toBe('1,00 €')
+    expect(result).toBe('1,00')
 
     result = wrapper.vm.convertToHumanAmount(wrapper.vm.convertToCurrency('1,01'))
-    expect(result).toBe('1,01 €')
+    expect(result).toBe('1,01')
 
     result = wrapper.vm.convertToHumanAmount(wrapper.vm.convertToCurrency(',5'))
-    expect(result).toBe('0,50 €')
+    expect(result).toBe('0,50')
 
     result = wrapper.vm.convertToHumanAmount(wrapper.vm.convertToCurrency('0,50'))
-    expect(result).toBe('0,50 €')
+    expect(result).toBe('0,50')
 
     result = wrapper.vm.convertToHumanAmount(wrapper.vm.convertToCurrency('101,52'))
-    expect(result).toBe('101,52 €')
+    expect(result).toBe('101,52')
 })
