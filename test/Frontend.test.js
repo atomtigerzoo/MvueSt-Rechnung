@@ -2,7 +2,7 @@ import { describe, expect, test } from 'vitest'
 import { mount } from "@vue/test-utils"
 
 /*
-    This file is comments heavily for learning purposes 😬
+    This file is commented for learning purposes 😬
 */
 
 import App from "../src/App.vue"
@@ -50,7 +50,7 @@ describe('input calculations', () => {
         expect(wrapper.find('#grossTotal').element.value).toBe("119,00")
     
         const userTaxRate = entryRow.find('select[name="taxRate"]')
-        await userTaxRate.setValue('')
+        await userTaxRate.setValue('7')
         await userTaxRate.trigger('change')
     
         expect(userTaxRate.element.value).toBe('7')
@@ -60,7 +60,18 @@ describe('input calculations', () => {
         expect(wrapper.find('#grossTotal').element.value).toBe("107,00")
     }),
 
-    test.todo('multiple tax rates')
+    test('multiple tax rates', async () => {
+        const wrapper = mount(App)
+
+        await wrapper.vm.entryRows.push({id: 1, taxRate: '19', entryNet: '100'})
+        await wrapper.vm.entryRows.push({id: 2, taxRate: '7', entryNet: '100'})
+        await wrapper.vm.entryRows.push({id: 3, taxRate: '19', entryNet: '50'})
+
+        expect(wrapper.find('#grossNet').element.value).toBe("250,00")
+        expect(wrapper.find('#grossTaxes-7').element.value).toBe("7,00")
+        expect(wrapper.find('#grossTaxes-19').element.value).toBe("28,50")
+        expect(wrapper.find('#grossTotal').element.value).toBe("285,50")
+    })
 })
 
 
