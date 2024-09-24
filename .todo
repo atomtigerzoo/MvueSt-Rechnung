@@ -1,6 +1,7 @@
 # Todo
 
 - update tests
+- check responsive views
 - export as raw text (for copying into another program)
 
 -> add localstorage
