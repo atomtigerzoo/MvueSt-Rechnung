@@ -1,4 +1,4 @@
-# 💥 WIP - MvueSt-Rechnung
+# 📑 WIP - MvueSt-Rechnung
 
 Eine simple Rechnungsvorlage gebaut mit VueJS 3 und TailwindCSS - Werte 
 können gesperrt und dann in die Buchhaltung/Rechnungs-Vorlage kopiert
