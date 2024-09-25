@@ -6,6 +6,9 @@ import EntryRow from './components/EntryRow.vue'
 import GrossField from './components/GrossField.vue'
 
 
+const disableInputs = ref(false)
+
+
 const taxRates = [
   "7",
   "19"
@@ -135,7 +138,21 @@ async function removeEntryRow(id) {
 </script>
 
 <template>
-  <h1 class="mb-8 text-3xl text-center text-stone-800 font-mono font-semibold">Web-Rechnungsvorlage</h1>
+  <h1 class="mb-4 text-3xl text-center text-stone-800 font-mono font-semibold md:mb-0">Web-Rechnungsvorlage</h1>
+
+  <div class="pb-1 text-center md:text-right">
+    <label class="inline-flex items-center cursor-pointer">
+      <span class="mr-3 text-sm font-medium text-gray-600">Eingaben sperren</span>
+      <input v-model="disableInputs" type="checkbox" class="sr-only peer">
+      <div class="
+        relative w-11 h-6 bg-gray-200 rounded-full peer
+        peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500
+        peer-checked:after:translate-x-full peer-checked:after:border-white
+        after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300
+        after:border after:rounded-full after:h-5 after:w-5 after:transition-all
+        peer-checked:bg-pink-700"></div>
+    </label>
+  </div>
 
   <div class="py-8 px-4 bg-white border-4 border-stone-300 md:rounded-lg max-md:border-l-0 max-md:border-r-0 md:p-8">
     <!-- This is the container for the EntryRow ref wrapper -->
@@ -144,6 +161,7 @@ async function removeEntryRow(id) {
         v-for="entryRow in entryRows"
         :key="entryRow.id"
         :tax-rates="taxRates"
+        :disableInputs="disableInputs"
         v-model:tax-rate="entryRow.taxRate"
         v-model:entry-net="entryRow.entryNet"
         @removeEntry="removeEntryRow(entryRow.id)"
@@ -164,16 +182,16 @@ async function removeEntryRow(id) {
       </span>
     </div>
 
-    <GrossField :inputValue="convertToHumanAmount(grossNet)" inputName="grossNet" label="Gesamt Netto" />
+    <GrossField :inputValue="convertToHumanAmount(grossNet)" :disableInputs="disableInputs" inputName="grossNet" label="Gesamt Netto" />
 
     <GrossField
       v-for="rate in taxRatesUsed"
       :inputValue="convertToHumanAmount(grossTaxes[rate])"
       :inputName="`grossTaxes-${rate}`"
       :label="`Steuern (${rate}%)`"
+      :disableInputs="disableInputs"
       />
     
-    <GrossField :inputValue="convertToHumanAmount(grossTotal)" inputName="grossTotal" label="Gesamt Brutto" />
-    
+    <GrossField :inputValue="convertToHumanAmount(grossTotal)" :disableInputs="disableInputs" inputName="grossTotal" label="Gesamt Brutto" />
   </div>
 </template>

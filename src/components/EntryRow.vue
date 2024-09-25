@@ -2,15 +2,21 @@
 /*
  * Component that displays a single entry row for user input
  */
+import { computed } from 'vue'
 
 defineEmits(['removeEntry'])
 
-defineProps({
-  taxRates: Array
+const props = defineProps({
+  taxRates: Array,
+  disableInputs: Boolean
 })
 
 const taxRate = defineModel('taxRate', {type: String, default: ''})
 const entryNet = defineModel('entryNet', {type: String, default: ''})
+
+const inputDisabledObject = computed(() => ({
+  'bg-zinc-100 border-transparent': props.disableInputs === true
+}))
 </script>
 
 <template>
@@ -21,15 +27,25 @@ const entryNet = defineModel('entryNet', {type: String, default: ''})
         md:flex-row md:justify-start md:items-start md:space-x-2 md:space-y-0
       ">
         <div class="grow">
-          <input class="w-full" type="text" name="entry-service" placeholder="Leistung / Produkt">
+          <input
+            :readonly="disableInputs"
+            :class="inputDisabledObject"
+            class="w-full" type="text" name="entry-service" placeholder="Leistung / Produkt">
 
           <div class="mt-1.5">
-            <textarea class="w-full text-xs" rows="1" placeholder="Beschreibung" name="entry-description"></textarea>
+            <textarea
+              :readonly="disableInputs"
+              :class="inputDisabledObject"
+              class="w-full text-xs" rows="1" placeholder="Beschreibung" name="entry-description"></textarea>
           </div>
         </div>
         
         <div class="shrink-0 text-right pr-3 md:flex md:items-center md:pr-0">
-          <select class="mr-4 md:w-full md:mr-2" v-model="taxRate" name="taxRate">
+          <select
+            :disabled="disableInputs"
+            :class="inputDisabledObject"
+            class="mr-4 md:w-full md:mr-2" v-model="taxRate" name="taxRate"
+          >
             <option
               v-for="rate in taxRates"
               :value="rate"
@@ -40,6 +56,8 @@ const entryNet = defineModel('entryNet', {type: String, default: ''})
           <input
             name="userNet"
             v-model.trim="entryNet"
+            :readonly="disableInputs"
+            :class="inputDisabledObject"
             placeholder="Nettobetrag"
             class="w-32 pr-8 text-right lg:w-48"
             >

@@ -3,12 +3,18 @@
  * Component for displaying gross amounts inside readonly input fields
  */
 
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
   inputValue: String,
   inputName: String,
-  label: String
+  label: String,
+  disableInputs: Boolean
 })
 
+const inputDisabledObject = computed(() => ({
+  'bg-zinc-100 border-transparent': props.disableInputs === true
+}))
 </script>
 
 <template>
@@ -23,6 +29,8 @@ defineProps({
         :value="inputValue"
         :id="inputName"
         :name="inputName"
+        :readonly="disableInputs"
+        :class="inputDisabledObject"
         >
       <span class="-ml-7 pl-2 text-lg text-neutral-700 font-semibold">&euro;</span>
     </div>
