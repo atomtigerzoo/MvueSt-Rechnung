@@ -1,10 +1,16 @@
 # 💥 WIP - MvueSt-Rechnung
 
-!! WIP - im Aufbau - WIP !!
+Eine simple Rechnungsvorlage gebaut mit VueJS 3 und TailwindCSS - Werte 
+können gesperrt und dann in die Buchhaltung/Rechnungs-Vorlage kopiert
+werden.
 
-Eine simple Rechnungsvorlage gebaut mit VueJS 3 und TailwindCSS
+Ausprobieren: https://things.atomtigerzoo.com/webrechnung/
 
 ## Project Setup
+
+```sh
+nvm use
+```
 
 ```sh
 npm install
